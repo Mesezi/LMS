@@ -12,7 +12,7 @@ const dispatch = useDispatch()
 
 
 useEffect(() => {
-    
+     console.log(userDetails)
   if(userDetails){{
     const getAllStudents =  async () =>{
       const querySnapshot = await getDocs(collection(database, `SCHOOLS/${userDetails.school}/STUDENTS`));
@@ -41,6 +41,7 @@ console.log(studentData)
   return (
   <section>
 
+{/* //what's happening in the spread */}
 {
 !studentData ? <p>loading...</p> : 
 <div className='flex flex-col gap-3'>{
