@@ -3,37 +3,17 @@ import StudentBar from '../../components/StudentBar';
 import { useDispatch, useSelector } from 'react-redux'
 import { studentsDataReducer } from '../../store/slice/allStudentsData';
 import { database } from '../../../fireBaseConfig';
-import { getDocs, collection } from 'firebase/firestore';
+import { getDocs, collection, query, where } from 'firebase/firestore';
 
 const Students = () => {
 const studentData = useSelector(state=>state.students)
 const userDetails = useSelector(state=>state.user.userDetails)
+const authDetails = useSelector(state=>state.user.authDetails)
+const students = useSelector(state=>state.students)
 const dispatch = useDispatch()
 
 
-useEffect(() => {
-    
-  
-    const getAllStudents =  async () =>{
-      const querySnapshot = await getDocs(collection(database, `SCHOOLS/${userDetails.school}/STUDENTS`));
-  
-     const students = [] 
-     querySnapshot.forEach((doc) => {
-    
-      students.push({...doc.data(),id: doc.id})});
-      
-      dispatch(studentsDataReducer(students))
-        }
 
-
-if(userDetails){{   
-  getAllStudents()
-  }}
-  
-  
-}, [userDetails])
-
-console.log(studentData)
 
   return (
   <section>

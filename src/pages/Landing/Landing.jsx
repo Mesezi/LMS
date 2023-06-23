@@ -10,7 +10,7 @@ const Landing = () => {
         <h4>LOGIN</h4>
         <button onClick={()=> navigate ('/admin-login')}>ADMIN</button>
         <button onClick={()=> navigate ('/student/login')}>STUDENT</button>
-        <button onClick={()=> navigate ('/teacher/login')}>TEACHER</button>
+        <button onClick={()=> navigate ('/class-login')}>TEACHER</button>
     </div>
   )
 }

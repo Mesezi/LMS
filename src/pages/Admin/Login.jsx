@@ -9,23 +9,19 @@ import { detailsReducer } from '../../store/slice/currentUser'
 const Login = () => {
 
    
-    const user = useSelector((state)=> state.user)
+    const authDetails = useSelector((state)=> state.user.authDetails)
     const dispatch = useDispatch();
     const navigate = useNavigate()
 
 
-
        useEffect(() => {
 
-        if(user.authDetails){
-          const split = !user.authDetails.displayName ? [] :  user.authDetails.displayName.split('-')
-
-          split[1] === 'admin'&& navigate('/admin/')
+        if(authDetails){
+          const split = !authDetails.displayName ? [] :  authDetails.displayName.split('-')
+          split[1] === 'admin' && navigate('/admin/')
         }
-       
-         
-    
-       }, [user.authDetails])
+
+       }, [authDetails])
        
 
 
@@ -34,18 +30,13 @@ const password = useRef()
     
     const loginUser = async (e) =>{
 
-        e.preventDefault()
+   e.preventDefault()
+
   signInWithEmailAndPassword(auth, email.current.value, password.current.value)
   .then((res) => {
     const split = !res.user.displayName ? [] :  res.user.displayName.split('-') 
-   
-    // const split = res.user?.displayName.split('-') 
 
     if(split[1] === 'admin'){
-      dispatch(detailsReducer({
-        school: split[0],
-        type: split[1]
-      }))
       navigate('/admin/')
       console.log('signed in')
     }
@@ -62,19 +53,6 @@ const password = useRef()
 //   updateProfile(res.user, {
 //     displayName: 'DEMO-admin',
 //  })
-
-    //   e.preventDefault()
-
-    //     try{
-    //         const user =  await createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
-         
-    //         await updateProfile(user.user, {
-    //             displayName: "admin"
-    //           })
-    //     }
-    //     catch(err){
-    //         alert(err.message)
-    //     }
        }
 
 

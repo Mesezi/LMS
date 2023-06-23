@@ -2,23 +2,25 @@ import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom'
 import { useLocation, useNavigate, NavLink } from 'react-router-dom';
 import { signOut } from 'firebase/auth' 
+import { getDocs, query, collection, where } from 'firebase/firestore';
 import { useDispatch, useSelector } from 'react-redux'
 import { detailsReducer } from '../../store/slice/currentUser';
+import { studentsDataReducer } from '../../store/slice/allStudentsData';
+import { database } from '../../../fireBaseConfig';
 
 const Layout = () => {
-
   const userDetails = useSelector((state)=> state.user.userDetails)
   const authDetails = useSelector((state)=> state.user.authDetails)
-  const navigate = useNavigate()
+  let navigate = useNavigate()
   const dispatch = useDispatch()
 
-
-  // if user is not admin navigate to landing page
-  if(userDetails){
-    if(userDetails.type !== "admin"){
+   // if user is not class account navigate to landing page
+   if(userDetails){
+    if(userDetails.type !== "class"){
       navigate('/')
     }
   }
+
 
   useEffect(()=>{
   // split displayName and get school name and account type
@@ -26,6 +28,7 @@ const Layout = () => {
       const split = authDetails.displayName.split('-') 
 
       dispatch(detailsReducer({
+        className: sessionStorage.getItem('class'),
         school: split[0],
         type: split[1]
       }))
@@ -33,9 +36,36 @@ const Layout = () => {
 
   }, [authDetails])
 
+  useEffect(() => {
+  dispatch(studentsDataReducer(null)) // clear student state
+
+    const getAllStudents =  async () =>{
+      const q = query(collection(database, `SCHOOLS/${userDetails.school}/STUDENTS`), where("student class", "==", userDetails.className));
+
+      const querySnapshot = await getDocs(q);
+      const students = []
+     
+      
+      querySnapshot.forEach((doc) => {
+        students.push({...doc.data(),id: doc.id})
+        });
+        
+        dispatch(studentsDataReducer(students))
+
+        console.log(students)
+    }
+
+
+if(userDetails){{   
+  getAllStudents()
+  console.log(userDetails)
+  }}
+  
+}, [userDetails])
+
 
   const logOut = () =>{
-    signOut(authDetails.auth).then(()=> navigate('/admin-login')).finally(sessionStorage.clear())
+    signOut(authDetails.auth).then(()=> navigate('/class-login')).finally(sessionStorage.clear())
   }
 
   return (
@@ -44,10 +74,8 @@ const Layout = () => {
         <h3>LMS</h3>
         <ul className='flex flex-col gap-2'>
           <li className='p-3 rounded-md '><NavLink>Dashboard</NavLink> </li>
-          <li className='p-3 rounded-md '><NavLink>All Classes</NavLink> </li>
-          <li className='p-3 rounded-md '><NavLink to={'/admin/classes/add'}>Add Class</NavLink> </li>
           <li className='p-3 rounded-md '><a target='_blank' href='/add-student'>Add Student</a> </li>
-          <li className='p-3 rounded-md '><NavLink to={'/admin/students'}>All Students</NavLink> </li>
+          <li className='p-3 rounded-md '><NavLink to={'/class/students'}>All Students</NavLink> </li>
           <li className='p-3 rounded-md '><NavLink>School info</NavLink> </li>
           <li className='p-3 rounded-md '><NavLink>Timetable</NavLink> </li>
           <li className='p-3 rounded-md '><NavLink>Notice Board</NavLink> </li>

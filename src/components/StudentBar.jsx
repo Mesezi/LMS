@@ -8,7 +8,7 @@ const StudentBar = (props) => {
     <h3>{`${props['first name']} ${props['last name']}`}</h3>
     <p>{props.email}</p>
     <p>{props.gender}</p>
-    <p>{props['Student class']}</p>
+    <p>{props['student class']}</p>
 
     </Link>
   )

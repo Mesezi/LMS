@@ -13,14 +13,7 @@ const AddStudent = () => {
 	const [classes, setClasses] = useState([]);
 	const [schoolName, setSchoolName] = useState();
 	const [token, setToken] = useState("");
-	const [formData, setformData] = useState({
-		fullName: "",
-		email: "",
-		password: "",
-		age: "",
-		mothersMaiden: "",
-		class: "",
-	});
+	const [formData, setformData] = useState({});
 
 	//fetch list of classes with entered school token
 	const fetchClasses = async (schoolid) => {
@@ -42,7 +35,11 @@ const AddStudent = () => {
 
 	//listen for changes in the form, excluding the token
 	const handleChange = (e) => {
+		
 		const { name, value } = e.target;
+
+		console.log(name, value)
+
 		setformData((prevData) => {
 			return {
 				...prevData,
@@ -72,56 +69,42 @@ const AddStudent = () => {
 
 	//save student details in db
 	const saveStudentDetails = async () => {
-		await setDoc(
-			doc(
-				database,
-				"SCHOOLS",
-				`${schoolName}`,
-				"STUDENTS",
-				`${formData.email}`
-			),
-			{
-				email: formData.email,
-				fullName: formData.fullName,
-				age: formData.age,
-				mothersMaiden: formData.mothersMaiden,
-				class: formData.class,
-			}
-		)
-			.then(() => {
-				alert("data stored");
+		console.log(formData, schoolName)
+
+		const docRef = doc(database, `SCHOOLS/${schoolName}/STUDENTS/${formData.email}`);
+	
+		try{
+			const data = formData
+			delete data.password
+			console.log(data)
+			await setDoc(docRef, {...data}); 
+
+			console.log('file updated')
+
+			//update student's display name
+			updateProfile(auth.currentUser, {
+				displayName: `${schoolName}-student`,
 			})
-			.catch((error) => {
-				alert("unable to save data");
-				console.log(error);
-			});
+				.then(() => {
+					alert("profile updated");
+					auth.signOut();
+				})
+		}
+		catch(err){
+			console.log(err)
+		}
+
 	};
 
-	//update student's display name
-	const updateStudentProfile = () => {
-		console.log(`${schoolName}-${formData.fullName}`);
-		updateProfile(auth.currentUser, {
-			displayName: `${schoolName}-${formData.fullName}`,
-		})
-			.then(() => {
-				alert("profile updated");
-			})
-			.catch((error) => {
-				alert(error.message);
-			});
-	};
-
+	
+	
 	//submit form details
-	const handleSubmit = (e) => {
+	const handleSubmit  = async (e) => {
 		e.preventDefault();
 		createUserWithEmailAndPassword(auth, formData.email, formData.password)
 			.then((userCredential) => {
 				// Signed in
-				updateStudentProfile();
 				saveStudentDetails();
-				alert("successfully created");
-				const user = userCredential.user;
-				auth.signOut();
 			})
 			.catch((error) => {
 				const errorCode = error.code;
@@ -159,17 +142,24 @@ const AddStudent = () => {
 			<input
 				onChange={handleChange}
 				type='text'
-				name='fullName'
-				placeholder='enter your name'
-				value={formData.fullName}
+				name='first name'
+				placeholder='enter your first name'
 				className='border-2 border-rose-500 w-60'
 			/>
+
+			<input
+				onChange={handleChange}
+				type='text'
+				name='last name'
+				placeholder='enter your Last name'
+				className='border-2 border-rose-500 w-60'
+			/>
+
 			<input
 				onChange={handleChange}
 				type='text'
 				name='email'
 				placeholder='enter valid email address'
-				value={formData.email}
 				className='border-2 border-rose-500 w-60'
 			/>
 			<input
@@ -177,7 +167,6 @@ const AddStudent = () => {
 				type='text'
 				name='password'
 				placeholder='enter password'
-				value={formData.password}
 				className='border-2 border-rose-500 w-60'
 			/>
 			<input
@@ -186,27 +175,33 @@ const AddStudent = () => {
 				name='age'
 				placeholder='age'
 				className='border-2 border-rose-500 w-60'
-				value={formData.age}
 			/>
 			<input
 				onChange={handleChange}
 				type='text'
 				name='mothersMaiden'
 				placeholder="mother's maiden name"
-				value={formData.mothersMaiden}
 				className='border-2 border-rose-500 w-60'
 			/>
 
-			<select
+            <select
 				onChange={handleChange}
-				name='class'
+				name='gender'
 				className='border-2 border-rose-500 w-60'
 			>
-				{classes.length > 0 ? (
-					classes.map((item) => <option value={item}>{item}</option>)
-				) : (
-					<option value={null}>Select Student</option>
-				)}
+                <option value={null}>Select Gender</option>
+				<option value='male'>Male</option>
+				<option value='female'>Female</option>
+			</select>
+
+			<select
+				onChange={handleChange}
+				name='student class'
+				className='border-2 border-rose-500 w-60'
+			>
+				<option value={null}>Select Class</option>
+				{classes.length > 0 && classes.map((item) => <option value={item}>{item}</option>) }
+				
 			</select>
 
 			<div>

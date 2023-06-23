@@ -1,15 +1,15 @@
 import { useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { authReducer } from './store/slice/currentUser'
+import { useDispatch } from 'react-redux'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import AdminLogin from './pages/Admin/Login'
 import './App.css'
 import { getAuth, setPersistence, signInWithEmailAndPassword, browserSessionPersistence } from "firebase/auth";
+
+// ADMIN IMPORTS
 import AdminLayout from './pages/Admin/Layout'
 import AdminDashboard from './pages/Admin/Dashboard'
 import RouteGuard from './components/RouteGuard'
-import { authReducer } from './store/slice/currentUser'
-import { useDispatch } from 'react-redux'
 import Landing from './pages/Landing/Landing'
 import Students from './pages/Admin/Students'
 import Classes from './pages/Admin/Classes'
@@ -17,13 +17,20 @@ import StudentProfile from './pages/Admin/StudentProfile'
 import AddStudent from './pages/Admin/AddStudent'
 import AddClasses from './pages/Admin/AddClasses'
 
+//CLASS IMPORTS
+import ClassLogin from './pages/Class/Login'
+import ClassLayout from './pages/Class/Layout'
+import ClassDashboard from './pages/Class/Dashboard'
+import ClassStudentProfile from './pages/Class/StudentProfile'
+import ClassStudents from './pages/Class/Students'
+
 
 function App() {
 
   const dispatch = useDispatch()
   const auth = getAuth();
 
-
+// signs user out after brwoser tab or window is closed 
 setPersistence(auth, browserSessionPersistence)
   .then(() => {
     // Existing and future Auth states are now persisted in the current
@@ -37,6 +44,8 @@ setPersistence(auth, browserSessionPersistence)
     
   });
 
+
+  // update user auth state any time auth changes
   useEffect(()=>{
     const unsubscribe = auth.onAuthStateChanged(user=>{
        dispatch(authReducer(user))
@@ -55,11 +64,17 @@ setPersistence(auth, browserSessionPersistence)
       path:'/admin-login',
       element: <AdminLogin />,
     },
+
+    {
+      path:'/class-login',
+      element: <ClassLogin />,
+    },
+
     {
       path: "/add-student",
       element: <AddStudent />,
     },
-
+// Admin Routes
     {
       path:'/admin',
       element: <RouteGuard><AdminLayout /></RouteGuard> ,
@@ -67,7 +82,7 @@ setPersistence(auth, browserSessionPersistence)
         {
           path: "/admin",
           element: <AdminDashboard />,
-        },
+        }, 
         {
           path: "/admin/students",
           element: <Students />,
@@ -90,6 +105,28 @@ setPersistence(auth, browserSessionPersistence)
           path: "/admin/notice-board",
           element: <AdminDashboard />,
         },
+      ],
+    },
+// Classes Routes
+    {
+      path:'/class',
+      element: <RouteGuard><ClassLayout /></RouteGuard> ,
+      children: [
+        {
+          path: "/class",
+          element: <ClassDashboard />,
+        },
+
+        {
+          path: "/class/students",
+          element: <ClassStudents />,
+        },
+
+        {
+          path: "/class/students/:id",
+          element: <ClassStudentProfile />,
+        },
+        
       ],
     }
       ])
