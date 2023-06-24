@@ -3,53 +3,20 @@ import { database } from '../../../fireBaseConfig';
 import { getDoc, doc, collection, setDoc, getDocs } from 'firebase/firestore';
 import { useSelector } from "react-redux";
 import bcrypt from 'bcryptjs'
+import sortClasses from "../../utils/sortClasses";
+import { useOutletContext } from "react-router-dom";
 
 const AddClasses = () => {
-    const [subjects, setSubjects] = useState()
-    const [currentlyRegClasses, setCurrentlyRegClasses] = useState()
-    const [newClassDetails, setNewClassDetails] = useState({level: null, subjects: [], number:1, alm:''})
+    const [newClassDetails, setNewClassDetails] = useState({subjects: [], alm:''})
     const userDetails = useSelector(state=>state.user.userDetails)
-
-useEffect(() => {
-    
-  const getData =  async () =>{
-
-     const querySnapshot = await getDocs(collection(database, `SCHOOLS/${userDetails.school}/CLASSES`));
-     const classes = [] 
-     querySnapshot.forEach((doc) => classes.push(doc.id));
-     setCurrentlyRegClasses(classes)
-
-
-  
-    const docRef = doc(database, `SCHOOLS/${userDetails.school}`);
-    const docSnap = await getDoc(docRef);
-    
-    if (docSnap.exists()) {
-      setSubjects(docSnap.data().subjects);
-      console.log("document!");
-    } else {console.log("No such document!");}
-
-
-
-    
-          }
-
-
-if(userDetails){{   
-  getData()
-}}
-
-
-}, [userDetails])
-
-
+    const [currentlyRegClasses] = useOutletContext()
+    const subjects = useSelector(state=>state.schoolInfo.subjects)
 
 useEffect(()=>{
 
-  if(newClassDetails.level && subjects){
-      setNewClassDetails(prev=>({...prev, subjects: [] }))
-  }
-}, [newClassDetails.level])
+setNewClassDetails(prev=>({...prev, subjects: [] }))
+  
+}, [newClassDetails['class name']])
 
 
   const handleInput = (e)=>{
@@ -70,26 +37,29 @@ useEffect(()=>{
 
 
 //  console.log(bcrypt.compareSync('pry6key', '$2a$10$kgIlUj5lf1xsOV9LabpRA.oQVkTos3/BQGWVIR1NcTMtK1mkfwuSe'))
-console.log(currentlyRegClasses)
 
 const addClass =  async (e) =>{
 
   e.preventDefault()
 
+  console.log(!newClassDetails.alm)
+
   const salt = bcrypt.genSaltSync(10)
 
   const hashedPassword = bcrypt.hashSync(newClassDetails.key, salt)
 
-  const docRef = doc(database, `SCHOOLS/${userDetails.school}/CLASSES/${newClassDetails.level} ${newClassDetails.number}${newClassDetails.alm}`);
+  const docRef = newClassDetails.alm ?  doc(database, `SCHOOLS/${userDetails.school}/CLASSES/${newClassDetails['class name']}-${newClassDetails.alm}`) :
+   doc(database, `SCHOOLS/${userDetails.school}/CLASSES/${newClassDetails['class name']}`) 
   
   // const docRef = doc(database, "SCHOOLS", "DEMO",  "STUDENTS", studentId);
 
-  if(currentlyRegClasses.includes(`${newClassDetails.level} ${newClassDetails.number}${newClassDetails.alm}`)){
+  if(currentlyRegClasses.includes(`${newClassDetails['class name']}`)){
     alert('class already registered')
   }
 
   else{
-    try{ await setDoc(docRef, {...newClassDetails, key:hashedPassword}); }
+    try{ 
+      await setDoc(docRef, {...newClassDetails, key:hashedPassword}); }
 
     catch (err){ console.log(err)}  
   }
@@ -99,7 +69,6 @@ const addClass =  async (e) =>{
 
 
       }
-
 
   return (
      
@@ -113,49 +82,66 @@ const addClass =  async (e) =>{
 <form onSubmit={(e)=>addClass(e)} className="flex flex-col gap-4">
 
 <div className='flex gap-3'>
-<label htmlFor="">Level</label>
-<select name="level" id=""  onChange={(e)=>handleInput(e)} required>
+<label htmlFor="">Class</label>
+<select name="class name" id=""  onChange={(e)=>handleInput(e)} required>
     <option value={null} >--</option>
-    <option value="primary">Primary</option>
-    <option value="junior secondary">Junior Secondary</option>
-    <option value="senior secondary">Senior Secondary</option>
+    <option value="Primary 1">Primary 1</option>
+    <option value="Primary 2">Primary 2</option>
+    <option value="Primary 3">Primary 3</option>
+    <option value="Primary 4">Primary 4</option>
+    <option value="Primary 5">Primary 5</option>
+    <option value="Primary 6">Primary 6</option>
+
+    <option value="JS 1">Junior Secondary 1</option>
+    <option value="JS 2">Junior Secondary 2</option>
+    <option value="JS 3">Junior Secondary 3</option>
+
+
+    <option value="SS 1">Senior Secondary 1</option>
+    <option value="SS 2">Senior Secondary 2</option>
+    <option value="SS 3">Senior Secondary 3</option>
 </select>
 </div>
 
 
 
-{newClassDetails.level && <> 
-<div className='flex gap-3'>
-<label htmlFor="">Class Number</label>
- <select name="number" id="" onChange={(e)=>handleInput(e)} required>
-    <option value={1}>1</option>
-    <option value={2}>2</option>
-    <option value={3}>3</option>
-  {/* display extra classes if level is primary school */}
-    {newClassDetails.level === 'primary' && <>
-    <option value={4}>4</option>
-    <option value={5}>5</option>
-    <option value={6}>6</option></>}
-</select> 
-</div>
 
-<div className='flex gap-3'>
-    <label htmlFor="">Class name</label>
-    <p>{`${newClassDetails.level} ${newClassDetails.number}${newClassDetails.alm}`}</p>
-</div>
+{newClassDetails['class name'] && <> 
 
 <div className='flex gap-3'>
 <label htmlFor="">Subjects</label>
   {/* dropdown list of registered classes */}
 <div>
+  {
+ newClassDetails['class name'].includes('Primary') && subjects['primary'].map(el => {
+   return <div> <label htmlFor={el} >{el}</label>
+      <input type="checkbox" id={el} checked={newClassDetails.subjects.includes(el)} 
+      onClick={()=>handleSelectedSubject(el)}/> 
+      </div>
+    })
+  }
+
+
 {
-    newClassDetails.level && subjects[newClassDetails.level].map(el => {
-     return <div> <label htmlFor={el} >{el}</label>
-        <input type="checkbox" id={el} checked={newClassDetails.subjects.includes(el)} 
-        onClick={()=>handleSelectedSubject(el)}/> 
-        </div>
-      })
-}
+ newClassDetails['class name'].includes('JS') && subjects['junior secondary'].map(el => {
+   return <div> <label htmlFor={el} >{el}</label>
+      <input type="checkbox" id={el} checked={newClassDetails.subjects.includes(el)} 
+      onClick={()=>handleSelectedSubject(el)}/> 
+      </div>
+    })
+  }
+
+{
+ newClassDetails['class name'].includes('SS') && subjects['senior secondary'].map(el => {
+   return <div> <label htmlFor={el} >{el}</label>
+      <input type="checkbox" id={el} checked={newClassDetails.subjects.includes(el)} 
+      onClick={()=>handleSelectedSubject(el)}/> 
+      </div>
+    })
+  }
+
+ 
+
 </div>
    
   
@@ -163,14 +149,20 @@ const addClass =  async (e) =>{
 </div>
 
 <div className='flex gap-3'>
-    <label htmlFor="">Class Key</label>
-    <input type="text" name="key" onChange={(e)=>handleInput(e)} required/>
+    <label htmlFor="">Alm</label>
+    <input type="text" name="alm" onChange={(e)=>handleInput(e)} autoComplete="off"/>
 </div>
 
 <div className='flex gap-3'>
-    <label htmlFor="">Alm</label>
-    <input type="text" name="alm" onChange={(e)=>handleInput(e)}/>
+    <label htmlFor="">Class Key</label>
+    <input type="text" name="key" onChange={(e)=>handleInput(e)} required autoComplete="off"/>
 </div>
+
+
+{/* <div className='flex gap-3'>
+    <label htmlFor="">date</label>
+    <input type="date" name="date" onChange={(e)=>console.log(e.target.value)}/>
+</div> */}
 </>}
 
 <button>

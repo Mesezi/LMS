@@ -11,30 +11,6 @@ const userDetails = useSelector(state=>state.user.userDetails)
 const dispatch = useDispatch()
 
 
-useEffect(() => {
-    
-  
-    const getAllStudents =  async () =>{
-      const querySnapshot = await getDocs(collection(database, `SCHOOLS/${userDetails.school}/STUDENTS`));
-  
-     const students = [] 
-     querySnapshot.forEach((doc) => {
-    
-      students.push({...doc.data(),id: doc.id})});
-      
-      dispatch(studentsDataReducer(students))
-        }
-
-
-if(userDetails){{   
-  getAllStudents()
-  }}
-  
-  
-}, [userDetails])
-
-console.log(studentData)
-
   return (
   <section>
 
