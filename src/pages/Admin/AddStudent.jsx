@@ -7,6 +7,7 @@ import {
 	updateProfile,
 } from "firebase/auth";
 import { async } from "@firebase/util";
+import sortClasses from "../../utils/sortClasses";
 
 const AddStudent = () => {
 	const auth = getAuth();
@@ -30,7 +31,8 @@ const AddStudent = () => {
 			console.log(doc.id, " => ", doc.data());
 			data.push(doc.id);
 		});
-		setClasses(data);
+
+		setClasses(sortClasses(data));
 	};
 
 	//listen for changes in the form, excluding the token

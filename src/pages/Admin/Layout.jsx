@@ -1,16 +1,26 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom'
 import { useLocation, useNavigate, NavLink } from 'react-router-dom';
 import { signOut } from 'firebase/auth' 
 import { useDispatch, useSelector } from 'react-redux'
 import { detailsReducer } from '../../store/slice/currentUser';
+import getCurrentDate from '../../utils/getCurrentDate';
+import { doc, getDoc, getDocs, collection } from 'firebase/firestore';
+import { database } from '../../../fireBaseConfig';
+import { infoReducer } from '../../store/slice/schoolInfo';
+import sortClasses from '../../utils/sortClasses';
+import { studentsDataReducer } from '../../store/slice/allStudentsData';
 
 const Layout = () => {
 
   const userDetails = useSelector((state)=> state.user.userDetails)
   const authDetails = useSelector((state)=> state.user.authDetails)
+  const schoolInfo = useSelector(state=>state.schoolInfo)
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const [termDaysLeft, setTermDaysLeft] = useState('')
+  const [currentlyRegClasses, setCurrentlyRegClasses] = useState()
+  
 
 
   // if user is not admin navigate to landing page
@@ -21,17 +31,90 @@ const Layout = () => {
   }
 
   useEffect(()=>{
-  // split displayName and get school name and account type
-    if(authDetails.displayName){
-      const split = authDetails.displayName.split('-') 
+    // split displayName and get school name and account type, to set userDetails
+      if(authDetails.displayName){
+        const split = authDetails.displayName.split('-') 
+  
+        dispatch(detailsReducer({
+          school: split[0],
+          type: split[1]
+        }))
+      }
+  
+    }, [authDetails])
 
-      dispatch(detailsReducer({
-        school: split[0],
-        type: split[1]
-      }))
+
+  useEffect(() => {
+    const getAllStudents =  async () =>{
+      const querySnapshot = await getDocs(collection(database, `SCHOOLS/${userDetails.school}/STUDENTS`))
+  
+     const students = [] 
+     querySnapshot.forEach((doc) => {
+    
+      students.push({...doc.data(),id: doc.id})});
+      
+      dispatch(studentsDataReducer(students))
+        }
+
+if(userDetails){{   
+  getAllStudents()
+  }}
+  
+  
+}, [userDetails])
+  
+
+
+  useEffect(() => {
+
+    if(userDetails){
+      const docRef = doc(database, `SCHOOLS/${userDetails.school}`);
+    
+      getDoc(docRef).then(docSnap=> {
+  
+        if (docSnap.exists()) {
+          dispatch(infoReducer(docSnap.data()));
+        } else { console.log("No such document!"); }
+      }); 
+      
+      
+      // get all reistered school classes from firestore
+    let classes = [] 
+    getDocs(collection(database, `SCHOOLS/${userDetails.school}/CLASSES`)).then(res => res.forEach((doc) => {
+      classes.push(doc.id)
+      classes = sortClasses(classes)// function sorts the classes accordingly
+      console.log(classes)
+      setCurrentlyRegClasses(classes)
+    }) )
+    
+
+
     }
 
-  }, [authDetails])
+      }, [userDetails])
+
+
+
+  useEffect(()=>{
+
+    if(schoolInfo){
+       var today = new Date(getCurrentDate());
+    var termEnd = new Date(schoolInfo.session['end date']);
+    console.log(schoolInfo)
+      
+    // To calculate the time difference of two dates
+    var Difference_In_Time = termEnd.getTime() - today.getTime();
+      
+    // To calculate the no. of days between two dates
+    var Difference_In_Days = Difference_In_Time / (1000 * 3600 * 24);
+
+    setTermDaysLeft(Difference_In_Days)
+    }
+   
+
+  }, [schoolInfo])
+
+
 
 
   const logOut = () =>{
@@ -57,7 +140,9 @@ const Layout = () => {
       </aside>
 
       <section className='lg:ml-[18%] w-full min-h-screen'>
-      <Outlet />
+       {schoolInfo && 
+       <p className='p-2 bg-gray-300 text-sm'>{`${schoolInfo.session.term} term of the ${schoolInfo.session.year} session ends ${new Date(schoolInfo.session['end date'])}`}</p>}
+      <Outlet context={[currentlyRegClasses]} />
       </section>
        
     </main>
