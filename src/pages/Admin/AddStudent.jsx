@@ -37,10 +37,9 @@ const AddStudent = () => {
 
 	//listen for changes in the form, excluding the token
 	const handleChange = (e) => {
-		
 		const { name, value } = e.target;
 
-		console.log(name, value)
+		console.log(name, value);
 
 		setformData((prevData) => {
 			return {
@@ -71,37 +70,35 @@ const AddStudent = () => {
 
 	//save student details in db
 	const saveStudentDetails = async () => {
-		console.log(formData, schoolName)
+		console.log(formData, schoolName);
 
-		const docRef = doc(database, `SCHOOLS/${schoolName}/STUDENTS/${formData.email}`);
-	
-		try{
-			const data = formData
-			delete data.password
-			console.log(data)
-			await setDoc(docRef, {...data}); 
+		const docRef = doc(
+			database,
+			`SCHOOLS/${schoolName}/STUDENTS/${formData.email}`
+		);
 
-			console.log('file updated')
+		try {
+			const data = formData;
+			delete data.password;
+			console.log(data);
+			await setDoc(docRef, { ...data });
+
+			console.log("file updated");
 
 			//update student's display name
 			updateProfile(auth.currentUser, {
 				displayName: `${schoolName}-student`,
-			})
-				.then(() => {
-					alert("profile updated");
-					auth.signOut();
-				})
+			}).then(() => {
+				alert("profile updated");
+				auth.signOut();
+			});
+		} catch (err) {
+			console.log(err);
 		}
-		catch(err){
-			console.log(err)
-		}
-
 	};
 
-	
-	
 	//submit form details
-	const handleSubmit  = async (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 		createUserWithEmailAndPassword(auth, formData.email, formData.password)
 			.then((userCredential) => {
@@ -186,12 +183,12 @@ const AddStudent = () => {
 				className='border-2 border-rose-500 w-60'
 			/>
 
-            <select
+			<select
 				onChange={handleChange}
 				name='gender'
 				className='border-2 border-rose-500 w-60'
 			>
-                <option value={null}>Select Gender</option>
+				<option value={null}>Select Gender</option>
 				<option value='male'>Male</option>
 				<option value='female'>Female</option>
 			</select>
@@ -202,8 +199,8 @@ const AddStudent = () => {
 				className='border-2 border-rose-500 w-60'
 			>
 				<option value={null}>Select Class</option>
-				{classes.length > 0 && classes.map((item) => <option value={item}>{item}</option>) }
-				
+				{classes.length > 0 &&
+					classes.map((item) => <option value={item}>{item}</option>)}
 			</select>
 
 			<div>
