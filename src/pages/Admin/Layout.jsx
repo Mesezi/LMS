@@ -134,7 +134,7 @@ if(userDetails){{
           <li className='p-3 rounded-md '><NavLink>School info</NavLink> </li>
           <li className='p-3 rounded-md '><NavLink>Timetable</NavLink> </li>
           <li className='p-3 rounded-md '><NavLink>Notice Board</NavLink> </li>
-          <li className='p-3 rounded-md '><NavLink to={'/admin/attendance'}>Attendance</NavLink> </li>
+        
 
           <li className='p-3 rounded-md ' onClick={logOut}>Log out</li>
         </ul>
