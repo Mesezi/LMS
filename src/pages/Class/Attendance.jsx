@@ -27,6 +27,7 @@ function Attendance() {
 
 				const sessionEnd = new Date(endDate);
 
+				//converts to date accurately to milliseconds starting from jan 1, 1970
 				const todayUTC = Date.UTC(
 					today.getFullYear(),
 					today.getMonth(),
