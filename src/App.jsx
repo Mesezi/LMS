@@ -16,6 +16,7 @@ import Classes from './pages/Admin/Classes'
 import StudentProfile from './pages/Admin/StudentProfile'
 import AddStudent from './pages/Admin/AddStudent'
 import AddClasses from './pages/Admin/AddClasses'
+import Attendance from './pages/Class/Attendance'
 
 //CLASS IMPORTS
 import ClassLogin from './pages/Class/Login'
@@ -105,6 +106,7 @@ setPersistence(auth, browserSessionPersistence)
           path: "/admin/notice-board",
           element: <AdminDashboard />,
         },
+       
       ],
     },
 // Classes Routes
@@ -120,6 +122,11 @@ setPersistence(auth, browserSessionPersistence)
         {
           path: "/class/students",
           element: <ClassStudents />,
+        },
+
+        {
+          path: "/class/attendance",
+          element: <Attendance />,
         },
 
         {
