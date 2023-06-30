@@ -24,6 +24,11 @@ import ClassDashboard from './pages/Class/Dashboard'
 import ClassStudentProfile from './pages/Class/StudentProfile'
 import ClassStudents from './pages/Class/Students'
 
+//STUDENT IMPORTS
+import StudentLogin from './pages/Student/Login'
+import StudentLayout from './pages/Student/Layout'
+import StudentDashboard from './pages/Student/Dashboard'
+
 
 function App() {
 
@@ -68,6 +73,11 @@ setPersistence(auth, browserSessionPersistence)
     {
       path:'/class-login',
       element: <ClassLogin />,
+    },
+
+    {
+      path:'/student-login',
+      element: <StudentLogin />,
     },
 
     {
@@ -126,6 +136,19 @@ setPersistence(auth, browserSessionPersistence)
           path: "/class/students/:id",
           element: <ClassStudentProfile />,
         },
+        
+      ],
+    },
+    //Student Routes
+    {
+      path:'/student',
+      element: <RouteGuard><StudentLayout /></RouteGuard> ,
+      children: [
+        {
+          path: "/student",
+          element: <StudentDashboard />,
+        },
+
         
       ],
     }

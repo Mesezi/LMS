@@ -8,7 +8,7 @@ export default function getCurrentDate (){
     // This arrangement can be altered based on how we want the date's format to appear.
     let currentDate = `${year}-${month}-${day}`;
     
-    console.log(currentDate); // "17-6-2022"
+    // console.log(currentDate); // "17-6-2022"
 
     return currentDate
 }

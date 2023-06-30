@@ -5,7 +5,7 @@ import { signOut } from 'firebase/auth'
 import { useDispatch, useSelector } from 'react-redux'
 import { detailsReducer } from '../../store/slice/currentUser';
 import getCurrentDate from '../../utils/getCurrentDate';
-import { doc, getDoc, getDocs, collection } from 'firebase/firestore';
+import { doc, getDoc, getDocs, collection, onSnapshot } from 'firebase/firestore';
 import { database } from '../../../fireBaseConfig';
 import { infoReducer } from '../../store/slice/schoolInfo';
 import sortClasses from '../../utils/sortClasses';
@@ -45,47 +45,54 @@ const Layout = () => {
 
 
   useEffect(() => {
-    const getAllStudents =  async () =>{
-      const querySnapshot = await getDocs(collection(database, `SCHOOLS/${userDetails.school}/STUDENTS`))
+    const getData =  async () =>{
+      // get school students from firestore
+      const schoolStudents = await getDocs(collection(database, `SCHOOLS/${userDetails.school}/STUDENTS`))
   
-     const students = [] 
-     querySnapshot.forEach((doc) => {
-    
+      const students = [] 
+     schoolStudents.forEach((doc) => {
       students.push({...doc.data(),id: doc.id})});
-      
       dispatch(studentsDataReducer(students))
-        }
 
-if(userDetails){{   
-  getAllStudents()
+      // get school info from firestore
+      const docRef = doc(database, `SCHOOLS/${userDetails.school}`);
+      getDoc(docRef).then(docSnap=> {
+
+        if (docSnap.exists()) {
+          dispatch(infoReducer(docSnap.data()));
+        } else { console.log("No such document!"); }
+      }); 
+
+        // get all reistered school classes from firestore
+      let classes = [] 
+      getDocs(collection(database, `SCHOOLS/${userDetails.school}/CLASSES`)).then(res => res.forEach((doc) => {
+        classes.push(doc.id)
+        classes = sortClasses(classes)// function sorts the classes accordingly
+        setCurrentlyRegClasses(classes)
+      }) )
+
+
+      }
+      
+
+if(userDetails){{  
+    onSnapshot(doc(database, "SCHOOLS",userDetails.school), (doc) => { // keep track of any change in firestore and update user state
+    getData()
+  })
+  
   }}
   
-  
 }, [userDetails])
-  
+
+
+
+
 
 
   useEffect(() => {
 
     if(userDetails){
-      const docRef = doc(database, `SCHOOLS/${userDetails.school}`);
-    
-      getDoc(docRef).then(docSnap=> {
-  
-        if (docSnap.exists()) {
-          dispatch(infoReducer(docSnap.data()));
-        } else { console.log("No such document!"); }
-      }); 
-      
-      
-      // get all reistered school classes from firestore
-    let classes = [] 
-    getDocs(collection(database, `SCHOOLS/${userDetails.school}/CLASSES`)).then(res => res.forEach((doc) => {
-      classes.push(doc.id)
-      classes = sortClasses(classes)// function sorts the classes accordingly
-      console.log(classes)
-      setCurrentlyRegClasses(classes)
-    }) )
+     
     
 
 
@@ -100,7 +107,6 @@ if(userDetails){{
     if(schoolInfo){
        var today = new Date(getCurrentDate());
     var termEnd = new Date(schoolInfo.session['end date']);
-    console.log(schoolInfo)
       
     // To calculate the time difference of two dates
     var Difference_In_Time = termEnd.getTime() - today.getTime();
@@ -122,30 +128,35 @@ if(userDetails){{
   }
 
   return (
-    <main className='flex'>
-      <aside className='h-screen fixed translate-x-[-100%] lg:translate-x-0 w-[18%] bg-blue-500 p-5 flex flex-col gap-4'>
-        <h3>LMS</h3>
-        <ul className='flex flex-col gap-2'>
-          <li className='p-3 rounded-md '><NavLink>Dashboard</NavLink> </li>
-          <li className='p-3 rounded-md '><NavLink>All Classes</NavLink> </li>
-          <li className='p-3 rounded-md '><NavLink to={'/admin/classes/add'}>Add Class</NavLink> </li>
-          <li className='p-3 rounded-md '><a target='_blank' href='/add-student'>Add Student</a> </li>
-          <li className='p-3 rounded-md '><NavLink to={'/admin/students'}>All Students</NavLink> </li>
-          <li className='p-3 rounded-md '><NavLink>School info</NavLink> </li>
-          <li className='p-3 rounded-md '><NavLink>Timetable</NavLink> </li>
-          <li className='p-3 rounded-md '><NavLink>Notice Board</NavLink> </li>
+    <>
+     {
+     userDetails?.type === 'admin' && <main className='flex'>
+     <aside className='h-screen fixed translate-x-[-100%] lg:translate-x-0 w-[18%] bg-blue-500 p-5 flex flex-col gap-4'>
+       <h3>LMS</h3>
+       <ul className='flex flex-col gap-2'>
+         <li className='p-3 rounded-md '><NavLink>Dashboard</NavLink> </li>
+         <li className='p-3 rounded-md '><NavLink>All Classes</NavLink> </li>
+         <li className='p-3 rounded-md '><NavLink to={'/admin/classes/add'}>Add Class</NavLink> </li>
+         <li className='p-3 rounded-md '><a target='_blank' href='/add-student'>Add Student</a> </li>
+         <li className='p-3 rounded-md '><NavLink to={'/admin/students'}>All Students</NavLink> </li>
+         <li className='p-3 rounded-md '><NavLink>School info</NavLink> </li>
+         <li className='p-3 rounded-md '><NavLink>Timetable</NavLink> </li>
+         <li className='p-3 rounded-md '><NavLink>Notice Board</NavLink> </li>
 
-          <li className='p-3 rounded-md ' onClick={logOut}>Log out</li>
-        </ul>
-      </aside>
+         <li className='p-3 rounded-md ' onClick={logOut}>Log out</li>
+       </ul>
+     </aside>
 
-      <section className='lg:ml-[18%] w-full min-h-screen'>
-       {schoolInfo && 
-       <p className='p-2 bg-gray-300 text-sm'>{`${schoolInfo.session.term} term of the ${schoolInfo.session.year} session ends ${new Date(schoolInfo.session['end date'])}`}</p>}
-      <Outlet context={[currentlyRegClasses]} />
-      </section>
-       
-    </main>
+     <section className='lg:ml-[18%] w-full min-h-screen'>
+      {schoolInfo && 
+      <p className='p-2 bg-gray-300 text-sm'>{`${schoolInfo.session.term} term of the ${schoolInfo.session.year} session ends ${new Date(schoolInfo.session['end date'])}`}</p>}
+     <Outlet context={[currentlyRegClasses]} />
+     </section>
+      
+   </main> 
+   }
+    </>
+    
   )
 }
 

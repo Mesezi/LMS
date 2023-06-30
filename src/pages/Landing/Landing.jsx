@@ -9,7 +9,7 @@ const Landing = () => {
     <div className='flex flex-col gap-6 items-center'>
         <h4>LOGIN</h4>
         <button onClick={()=> navigate ('/admin-login')}>ADMIN</button>
-        <button onClick={()=> navigate ('/student/login')}>STUDENT</button>
+        <button onClick={()=> navigate ('/student-login')}>STUDENT</button>
         <button onClick={()=> navigate ('/class-login')}>TEACHER</button>
     </div>
   )
