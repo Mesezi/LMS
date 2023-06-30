@@ -7,6 +7,8 @@ import { async } from "@firebase/util";
 
 function Attendance() {
 	const studentData = useSelector((state) => state.students);
+
+	console.log(studentData);
 	const [inSession, setInSession] = useState(true);
 
 	const today = new Date();
@@ -54,6 +56,7 @@ function Attendance() {
 
 	//set current date and student's status to present
 	const present = async (id) => {
+
 		console.log("present");
 		const dateRef = doc(
 			database,
@@ -95,6 +98,7 @@ function Attendance() {
 
 	//set students absent satus //thinking of using one function for both
 	const absent = async (id) => {
+		console.log("absent")
 		const dateRef = doc(
 			database,
 			"SCHOOLS",
