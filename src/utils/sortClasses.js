@@ -20,10 +20,6 @@ export default function sortClasses (classes){
         return 0;
       });
 
-
-
-      console.log(...primaryClasses, ...secondaryClasses)
-
       return [...primaryClasses, ...secondaryClasses]
 
 }

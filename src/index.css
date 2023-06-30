@@ -6,3 +6,38 @@
 /* input{
     border: 1px solid red;
 } */
+
+
+button, [type='button'], [type='reset'], [type='submit'] {
+    }
+
+    
+    .react-calendar__tile--active{
+        background: none;
+        background-color: white;
+    }
+
+    .react-calendar__tile--now{
+        background: none;
+        background-color: blue;
+        color: white;
+    }
+
+
+    
+
+    .circle{
+        position: relative;
+    }
+
+    .circle::before{
+        position: absolute;
+        top: 80%;
+        left: 50%;
+        height: .3rem;
+        border-radius: 50%;
+        width: .3rem;
+        background-color: blue;
+        content: '';
+        transform: translate(-50%, -50%);
+    }

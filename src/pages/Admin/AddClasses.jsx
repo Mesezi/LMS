@@ -41,9 +41,6 @@ setNewClassDetails(prev=>({...prev, subjects: [] }))
 const addClass =  async (e) =>{
 
   e.preventDefault()
-
-  console.log(!newClassDetails.alm)
-
   const salt = bcrypt.genSaltSync(10)
 
   const hashedPassword = bcrypt.hashSync(newClassDetails.key, salt)
