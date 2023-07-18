@@ -9,6 +9,7 @@ import {
 } from "firebase/firestore";
 import { useSelector, useDispatch } from "react-redux";
 import { setClass } from "../../store/slice/currentClass";
+import { generateId } from "../../utils/RandomId";
 
 function Timetable() {
 	const [currentlyRegClasses] = useOutletContext();
@@ -27,6 +28,7 @@ function Timetable() {
 
 
 	//view schedule functions
+	//get timetable data for viewing and set to state
 	const getTimetableData = async (classname) => {
 		const docRef = doc(database, `SCHOOLS/DEMO/CLASSES/${classname}`);
 		const docData = await getDoc(docRef);
@@ -46,6 +48,7 @@ function Timetable() {
 		}
 	};
 
+	//handle select field data for viewing of timetable
 	const handleChange = (e, type) => {
 		if (type) {
 			dispatch(setClass(e.target.value));
@@ -56,10 +59,10 @@ function Timetable() {
 		}
 	};
 
+
+	//handle data n input fields when user edits timetable form
 	const handleInputData = (day, id, e) => {
-		// console.log(day, id)
 		const { name, value } = e.target;
-		//  console.log(day, id, value)
 		setTableData((prevData) => {
 			const updatedData = {
 				...prevData,
@@ -79,6 +82,7 @@ function Timetable() {
 		});
 	};
 
+	//handle update of data by updatng the entire state in the db
 	const handleUpate = async () => {
 		const timeTableRef = doc(database, `SCHOOLS/DEMO/CLASSES/${selectedClass}`);
 		await updateDoc(timeTableRef, {
@@ -97,15 +101,15 @@ function Timetable() {
 
 
 	//add timetable functions
+
+	//handle selected day //add section
 	const handleDay = (e) => {
 		e.target.value;
 		setSelectedDay(e.target.value);
 	};
 
-	const generateId = () => {
-		return Math.floor(Math.random() * Date.now()).toString(16);
-	};
 
+	//handle creation of data in the db
 	const createField = (e) => {
 		console.log(selectedDay)
 		let dbData;
@@ -132,6 +136,8 @@ function Timetable() {
 
 	};
 
+
+	//check if data is duplicated
 	const checkDuplicate = (databaseData, newData)=>{
         if(databaseData[selectedDay].some((item)=>item.start === newData.start)){
 			alert("time schedule already exists, please check input fields and try again")
@@ -141,6 +147,7 @@ function Timetable() {
 		}
 	}
 
+	  //shandle data submission //add section
 	const submitCreatedField = async (data) => {
 		const dataRef = doc(database, `SCHOOLS/DEMO/CLASSES/${selectedClass}`);
 		const docRef = await updateDoc(dataRef, {
@@ -154,6 +161,7 @@ function Timetable() {
 			});
 	};
 
+	//fetch data for duplication check //add section
 	const FetchData = async() =>{
 		const dataRef = doc(database, `SCHOOLS/DEMO/CLASSES/${selectedClass}`);
 		const docRef = await getDoc(dataRef)
@@ -166,6 +174,7 @@ function Timetable() {
 		}
 	}
 
+	//handle inputs for add section
 	const handleData = (e) => {
 		const { name, value } = e.target;
 		setTableModel({ ...TableModel, [name]: value });
