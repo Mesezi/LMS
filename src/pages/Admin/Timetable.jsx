@@ -24,12 +24,23 @@ function Timetable() {
 
 	const [selectedDay, setSelectedDay] = useState();
 	const selectedClass = useSelector((state) => state.selectedClass); //redux flex //selcected class for view
+
+
+	//view schedule functions
 	const getTimetableData = async (classname) => {
 		const docRef = doc(database, `SCHOOLS/DEMO/CLASSES/${classname}`);
 		const docData = await getDoc(docRef);
 		if (docData.exists()) {
 			// console.log(docData.data().Timetable)
-			setTableData(docData.data().Timetable);
+			if(docData.data().Timetable){
+				setTableData(docData.data().Timetable);
+			}
+			else{
+				alert('please contact administrator, error 505')
+				setTableData([])
+				return
+			}
+			
 		} else {
 			console.log("No such document");
 		}
@@ -82,6 +93,10 @@ function Timetable() {
 			});
 	};
 
+
+
+
+	//add timetable functions
 	const handleDay = (e) => {
 		e.target.value;
 		setSelectedDay(e.target.value);
@@ -108,7 +123,7 @@ function Timetable() {
 				checkDuplicate(dbData, UpdatedModel )
 			}
 			else{
-				alert('timetable not present, contact administrator')
+				alert('timetable not present, contact administrator, error 405')
 			}
 		  }).catch((error)=>{
 			console.log(error)
@@ -386,13 +401,6 @@ function Timetable() {
 					ADD
 				</button>
 			</form>
-
-			<button
-				onClick={submitCreatedField}
-				className='bg-black text-white p-2 rounded-full mt-5'
-			>
-				SUBMIT CREATED FIELD
-			</button>
 
 			{}
 		</div>
