@@ -11,6 +11,7 @@ import { infoReducer } from '../../store/slice/schoolInfo';
 import sortClasses from '../../utils/sortClasses';
 import { studentsDataReducer } from '../../store/slice/allStudentsData';
 
+
 const Layout = () => {
 
   const userDetails = useSelector((state)=> state.user.userDetails)
@@ -124,8 +125,8 @@ if(userDetails){{
          <li className='p-3 rounded-md '><NavLink to={'/admin/classes/add'}>Add Class</NavLink> </li>
          <li className='p-3 rounded-md '><a target='_blank' href='/add-student'>Add Student</a> </li>
          <li className='p-3 rounded-md '><NavLink to={'/admin/students'}>All Students</NavLink> </li>
+         <li className='p-3 rounded-md '><NavLink to={'/admin/timetable'}>Timetable</NavLink> </li>
          <li className='p-3 rounded-md '><NavLink to={'/admin/school'}>School info</NavLink> </li>
-         <li className='p-3 rounded-md '><NavLink>Timetable</NavLink> </li>
          <li className='p-3 rounded-md '><NavLink>Notice Board</NavLink> </li>
 
          <li className='p-3 rounded-md ' onClick={logOut}>Log out</li>

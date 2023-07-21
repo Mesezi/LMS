@@ -17,6 +17,7 @@ import StudentProfile from './pages/Admin/StudentProfile'
 import AddStudent from './pages/Admin/AddStudent'
 import AddClasses from './pages/Admin/AddClasses'
 import Attendance from './pages/Class/Attendance'
+import Timetable from './pages/Admin/Timetable'
 import School from './pages/Admin/School'
 
 //CLASS IMPORTS
@@ -122,6 +123,12 @@ setPersistence(auth, browserSessionPersistence)
           path: "/admin/notice-board",
           element: <AdminDashboard />,
         },
+        {
+          path: "/admin/timetable",
+          element: <Timetable />,
+        },
+      
+
        
       ],
     },
