@@ -19,6 +19,7 @@ const Layout = () => {
 
    // if user is not class account navigate to landing page
    if(userDetails){
+    console.log(userDetails.type)
     if(userDetails.type !== "class"){
       navigate('/')
     }
@@ -81,6 +82,8 @@ const Layout = () => {
   
 }, [userDetails])
 
+schoolInfo && console.log(schoolInfo)
+
 
 useEffect(()=>{
   // number of new messages from db
@@ -133,7 +136,7 @@ useEffect(()=>{
      <section className='lg:ml-[18%] w-full min-h-screen'>
      {schoolInfo && 
        <p className='p-2 bg-gray-300 text-sm'>
-        {`${schoolInfo.session.term} term of the ${schoolInfo.session.year} session ends ${new Date(schoolInfo.session['end date'])}`}</p>}
+        {`${schoolInfo.session.term} term of the ${schoolInfo.session.year} session ends ${new Date(schoolInfo.session.endDate)}`}</p>}
        { numberOfNewMessages > 0 && <p>{`You have ${numberOfNewMessages} new message(s)`}</p>}
      <Outlet />
      </section>

@@ -88,21 +88,6 @@ if(userDetails){{
 
 
 
-
-
-  useEffect(() => {
-
-    if(userDetails){
-     
-    
-
-
-    }
-
-      }, [userDetails])
-
-
-
   useEffect(()=>{
 
     if(schoolInfo){
@@ -132,7 +117,7 @@ if(userDetails){{
     <>
      {
      userDetails?.type === 'admin' && <main className='flex'>
-     <aside className='h-screen fixed translate-x-[-100%] lg:translate-x-0 w-[18%] bg-blue-500 p-5 flex flex-col gap-4'>
+     <aside className='h-screen fixed translate-x-[-100vw] lg:translate-x-0 w-[18%] bg-blue-500 p-5 flex flex-col gap-4'>
        <h3>LMS</h3>
        <ul className='flex flex-col gap-2'>
          <li className='p-3 rounded-md '><NavLink>Dashboard</NavLink> </li>
@@ -140,8 +125,8 @@ if(userDetails){{
          <li className='p-3 rounded-md '><NavLink to={'/admin/classes/add'}>Add Class</NavLink> </li>
          <li className='p-3 rounded-md '><a target='_blank' href='/add-student'>Add Student</a> </li>
          <li className='p-3 rounded-md '><NavLink to={'/admin/students'}>All Students</NavLink> </li>
-         <li className='p-3 rounded-md '><NavLink>School info</NavLink> </li>
          <li className='p-3 rounded-md '><NavLink to={'/admin/timetable'}>Timetable</NavLink> </li>
+         <li className='p-3 rounded-md '><NavLink to={'/admin/school'}>School info</NavLink> </li>
          <li className='p-3 rounded-md '><NavLink>Notice Board</NavLink> </li>
 
          <li className='p-3 rounded-md ' onClick={logOut}>Log out</li>
@@ -150,7 +135,8 @@ if(userDetails){{
 
      <section className='lg:ml-[18%] w-full min-h-screen'>
       {schoolInfo && 
-      <p className='p-2 bg-gray-300 text-sm'>{`${schoolInfo.session.term} term of the ${schoolInfo.session.year} session ends ${new Date(schoolInfo.session['end date'])}`}</p>}
+      <p className='p-2 bg-gray-300 text-sm'>{`${schoolInfo.session.term} term of the ${schoolInfo.session.year} session ends 
+      ${new Date(schoolInfo.session.endDate).toDateString()}`}</p>}
      <Outlet context={[currentlyRegClasses]} />
      </section>
       

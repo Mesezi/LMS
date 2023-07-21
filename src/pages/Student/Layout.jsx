@@ -148,7 +148,7 @@ const Layout = () => {
       <section className='lg:ml-[18%] w-full min-h-screen'>
        {schoolInfo && 
        <p className='p-2 bg-gray-300 text-sm'>
-        {`${schoolInfo.session.term} term of the ${schoolInfo.session.year} session ends ${new Date(schoolInfo.session['end date'])}`}</p>}
+        {`${schoolInfo.session.term} term of the ${schoolInfo.session.year} session ends ${new Date(schoolInfo.session.endDate)}`}</p>}
        { numberOfNewMessages > 0 && <p>{`You have ${numberOfNewMessages} new message(s)`}</p>}
       <Outlet context={[studentSubjects]}  />
       </section>
