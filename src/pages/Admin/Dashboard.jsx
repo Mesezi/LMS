@@ -34,7 +34,7 @@ const handleInput = (e)=>{
 }
 
 const submitNewNotice = async (e) =>{
-  e.prnameDefault()
+  e.preventDefault()
 
   const id =new Date().getTime() // set new notice id with time
   const docRef = doc(database, `SCHOOLS/${userDetails.school}`);
