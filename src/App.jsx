@@ -17,6 +17,7 @@ import StudentProfile from './pages/Admin/StudentProfile'
 import AddStudent from './pages/Admin/AddStudent'
 import AddClasses from './pages/Admin/AddClasses'
 import Attendance from './pages/Class/Attendance'
+import School from './pages/Admin/School'
 
 //CLASS IMPORTS
 import ClassLogin from './pages/Class/Login'
@@ -106,6 +107,11 @@ setPersistence(auth, browserSessionPersistence)
         {
           path: "/admin/classes/add",
           element: <AddClasses />,
+        },
+
+        {
+          path: "/admin/school",
+          element: <School />,
         },
         
         {

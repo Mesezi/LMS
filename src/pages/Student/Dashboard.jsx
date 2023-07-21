@@ -5,30 +5,24 @@ import 'react-calendar/dist/Calendar.css';
 import { useSelector } from 'react-redux';
 import { doc, updateDoc } from 'firebase/firestore';
 import { database } from '../../../fireBaseConfig';
+import formatDate from '../../utils/formatDate';
+
 
 const Dashboard = () => {
     const [studentSubjects] = useOutletContext()
     const [value, onChange] = useState(new Date());
     const schoolInfo = useSelector(state=>state.schoolInfo)
     const userDetails = useSelector(state=>state.user.userDetails)
-    const datesToAddClassTo = [{date:'2023-6-27', event: 'party'}, {date:'2023-6-9', event: 'exam'}, {date:'2023-6-9', event: 'ends'}];
 
     
-function tileClassName({ date, view }) {
-    // Add class to tiles in month view only
-    if (view === 'month') {
-      // Check if a date React-Calendar wants to check is on the list of dates to add class to
-      if (datesToAddClassTo.find(dDate => isSameDay(new Date (dDate.date), date))) {
-        return 'circle';
+    function tileClassName({ date, view }) {
+      if(schoolInfo && view === 'month'){
+          // Check if a date React-Calendar wants to check is on the list of dates to add class to
+          if (schoolInfo.activity.find(dDate => formatDate(new Date (dDate.startDate)) === formatDate(date))) {
+            return 'circle';
+          }
       }
     }
-  }
-
-  function isSameDay(a, b) {
-    return a.getTime() - b.getTime() === 0
-  }
-
-const formatedDate = `${value.getFullYear()}-${value.getMonth() + 1}-${value.getDate()}`
 
 const readMessage = async (key) =>{
 if(!userDetails.latestNoticeId.includes(key)){
@@ -63,22 +57,24 @@ Number of Classes: {currentlyRegClasses?.length}
 </article> */}
 </section>
 
-
 <section className='flex gap-3'>
    <Calendar onChange={onChange} value={value} tileClassName={tileClassName}/>
     <div>
       <h4>Event</h4>
       {
-        // using currently clicked date show event for that day
-        datesToAddClassTo.findIndex(item => item.date === formatedDate) >= 0 ?
-        datesToAddClassTo.map(item=>{
-          if(item.date === formatedDate){return <p>{item.event}</p>}
+        // using currently clicked date show school activity for that day
+       schoolInfo && schoolInfo.activity.find(item => formatDate(new Date(item.startDate)) === formatDate(new Date(value))) ?
+        schoolInfo.activity.map(item=>{
+          if(formatDate(new Date(item.startDate)) === formatDate(new Date(value))){
+            return <p>{item.name}</p>}
         })
        :
         <p>No event</p>
       }
     </div>
    </section>
+
+
 
    <section>
     <h4>Notice board </h4>
