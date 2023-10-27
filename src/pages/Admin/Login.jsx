@@ -5,6 +5,7 @@ import { updateProfile, getAuth, createUserWithEmailAndPassword, signInWithEmail
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { detailsReducer } from '../../store/slice/currentUser'
+import getSchoolandAccountType from '../../utils/getSchoolandAccountType'
 
 const Login = () => {
 
@@ -17,8 +18,8 @@ const Login = () => {
        useEffect(() => {
 
         if(authDetails){
-          const split = !authDetails.displayName ? [] :  authDetails.displayName.split('-')
-          split[1] === 'admin' && navigate('/admin/')
+          const accountDetails = getSchoolandAccountType(authDetails.displayName)
+          accountDetails?.type === 'admin' && navigate('/admin/')
         }
 
        }, [authDetails])
@@ -28,31 +29,25 @@ const Login = () => {
 const email = useRef()
 const password = useRef()
     
-    const loginUser = async (e) =>{
+  const loginUser = async (e) =>{
 
    e.preventDefault()
 
   signInWithEmailAndPassword(auth, email.current.value, password.current.value)
   .then((res) => {
-    const split = !res.user.displayName ? [] :  res.user.displayName.split('-') 
+    const accountDetails = getSchoolandAccountType(res.user.displayName)
 
-    if(split[1] === 'admin'){
+    if(accountDetails.type === 'admin'){
       navigate('/admin/')
       console.log('signed in')
     }
     else{
       signOut(res.user.auth).then(()=> alert('wrong details'))
     }
-    
-  
 
   })
   .catch(err => console.log(err.message))
 
-
-//   updateProfile(res.user, {
-//     displayName: 'DEMO-admin',
-//  })
        }
 
 

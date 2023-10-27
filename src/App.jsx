@@ -6,31 +6,41 @@ import AdminLogin from './pages/Admin/Login'
 import './App.css'
 import { getAuth, setPersistence, signInWithEmailAndPassword, browserSessionPersistence } from "firebase/auth";
 
+
+import RegisterSchool from './RegisterSchool'
+
 // ADMIN IMPORTS
-import AdminLayout from './pages/Admin/Layout'
+import AdminLayout from './components/layouts/AdminLayout'
 import AdminDashboard from './pages/Admin/Dashboard'
 import RouteGuard from './components/RouteGuard'
 import Landing from './pages/Landing/Landing'
 import Students from './pages/Admin/Students'
 import Classes from './pages/Admin/Classes'
+import ClassDetails from './pages/Admin/ClassDetails'
+import ClassSubject from './pages/Admin/ClassSubject'
 import StudentProfile from './pages/Admin/StudentProfile'
 import AddStudent from './pages/Admin/AddStudent'
 import AddClasses from './pages/Admin/AddClasses'
 import Attendance from './pages/Class/Attendance'
 import Timetable from './pages/Admin/Timetable'
 import School from './pages/Admin/School'
+import RegisterStudent from './pages/Admin/registerStudent'
 
 //CLASS IMPORTS
 import ClassLogin from './pages/Class/Login'
-import ClassLayout from './pages/Class/Layout'
+import ClassLayout from  './components/layouts/ClassLayout'
 import ClassDashboard from './pages/Class/Dashboard'
 import ClassStudentProfile from './pages/Class/StudentProfile'
 import ClassStudents from './pages/Class/Students'
+import ClassProfile from './pages/Class/ClassProfile'
+import Subjects from './pages/Class/Subjects'
 
 //STUDENT IMPORTS
 import StudentLogin from './pages/Student/Login'
-import StudentLayout from './pages/Student/Layout'
+import StudentLayout from  './components/layouts/StudentLayout'
 import StudentDashboard from './pages/Student/Dashboard'
+import Profile from './pages/Student/Profile'
+
 
 
 function App() {
@@ -84,8 +94,13 @@ setPersistence(auth, browserSessionPersistence)
     },
 
     {
-      path: "/add-student",
-      element: <AddStudent />,
+      path:'/register-school',
+      element: <RegisterSchool />,
+    },
+
+    {
+      path: "/register-student",
+      element: <RegisterStudent />,
     },
 // Admin Routes
     {
@@ -111,6 +126,11 @@ setPersistence(auth, browserSessionPersistence)
         },
 
         {
+          path: "/admin/add-student/",
+          element: <AddStudent />,
+        },
+
+        {
           path: "/admin/school",
           element: <School />,
         },
@@ -119,6 +139,17 @@ setPersistence(auth, browserSessionPersistence)
           path: "/admin/classes",
           element: <Classes />,
         },
+
+        {
+          path: "/admin/classes/:class",
+          element: <ClassDetails />,
+        },
+
+        {
+          path: "/admin/classes/:class/:subject",
+          element: <ClassSubject />,
+        },
+
         {
           path: "/admin/notice-board",
           element: <AdminDashboard />,
@@ -153,6 +184,19 @@ setPersistence(auth, browserSessionPersistence)
         },
 
         {
+          path: "/class/profile",
+          element: <ClassProfile />,
+        },
+
+
+        {
+          path: "/class/profile/:subject",
+          element: <Subjects />,
+        },
+
+      
+
+        {
           path: "/class/students/:id",
           element: <ClassStudentProfile />,
         },
@@ -167,6 +211,11 @@ setPersistence(auth, browserSessionPersistence)
         {
           path: "/student",
           element: <StudentDashboard />,
+        },
+
+        {
+          path: "/student/profile",
+          element: <Profile />,
         },
 
         

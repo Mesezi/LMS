@@ -12,7 +12,7 @@ import { setClass } from "../../store/slice/currentClass";
 import { generateId } from "../../utils/RandomId";
 
 function Timetable() {
-	const [currentlyRegClasses] = useOutletContext();
+	const registeredClasses = useSelector(state=>state.registeredClasses)
 	const [currentClass, setCurrentClass] = useState();
 	const [TableData, setTableData] = useState([]);
 	const dispatch = useDispatch();
@@ -189,8 +189,8 @@ function Timetable() {
 				className='border-2 border-rose-500 w-60'
 			>
 				<option value={null}>Select Class</option>
-				{currentlyRegClasses &&
-					currentlyRegClasses.map((item) => (
+				{registeredClasses &&
+					registeredClasses.map((item) => (
 						<option key={item} value={item}>
 							{item}
 						</option>
@@ -353,8 +353,8 @@ function Timetable() {
 				className='border-2 border-rose-500 w-60'
 			>
 				<option value={null}>Select Class</option>
-				{currentlyRegClasses &&
-					currentlyRegClasses.map((item) => (
+				{registeredClasses &&
+					registeredClasses.map((item) => (
 						<option key={item} value={item}>
 							{item}
 						</option>
