@@ -1,7 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+function getAuthUserValue() {
+  for (let i = 0; i < sessionStorage.length; i++) {
+    const key = sessionStorage.key(i);
+    if (key.includes('authUser')) {
+      return JSON.parse(sessionStorage.getItem(key));
+    }
+  }
+  return null;
+}
+
 const initialState = {
-  authDetails: JSON.stringify(sessionStorage) ? true : false,
+  authDetails: getAuthUserValue(),
   userDetails: null
 }
 

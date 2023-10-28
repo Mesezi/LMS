@@ -5,6 +5,7 @@ import { updateProfile, getAuth, createUserWithEmailAndPassword, signInWithEmail
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { detailsReducer } from '../../store/slice/currentUser'
+import getSchoolandAccountType from '../../utils/getSchoolandAccountType'
 
 const Login = () => {
 
@@ -17,8 +18,8 @@ const Login = () => {
        useEffect(() => {
 
         if(authDetails){
-          const split = !authDetails.displayName ? [] :  authDetails.displayName.split('-')
-          split[1] === 'student' && navigate('/student/')
+          const accountDetails = getSchoolandAccountType(authDetails.displayName)
+          accountDetails.type === 'student' && navigate('/student/')
         }
 
        }, [authDetails])
@@ -34,9 +35,9 @@ const password = useRef()
 
   signInWithEmailAndPassword(auth, email.current.value, password.current.value)
   .then((res) => {
-    const split = !res.user.displayName ? [] :  res.user.displayName.split('-') 
+    const accountDetails = getSchoolandAccountType(res.user.displayName)
 
-    if(split[1] === 'student'){
+    if(accountDetails.type === 'student'){
       navigate('/student/')
       console.log('signed in')
     }

@@ -5,12 +5,14 @@ import { useLocation, useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux';
 
 const StudentProfile = () => {
-
+  const {state} = useLocation()
+  const params = useParams()
   const userDetails = useSelector(state=>state.user.userDetails)
   const schoolInfo = useSelector(state=>state.schoolInfo)
+  const allStudentsData = useSelector(state=>state.students)
 
 
-  const {state} = useLocation()
+
   const [profile, setProfile] = useState()
   const [grades, setGrades] = useState()
   const [allYears, setAllYears] = useState([]) // All result years in firestore 
@@ -19,36 +21,39 @@ const StudentProfile = () => {
   const [edit, setEdit] = useState(true)
 
 
-  const fetchStudentInfo = async () =>{
-    const docRef = doc(database, `SCHOOLS/${userDetails.school}/STUDENTS/${state.email}`);
-    const docSnap = await getDoc(docRef);
-    docSnap.exists() ? setProfile(docSnap.data()) : console.log('no such document')
-  }
+  // const fetchStudentInfo = async () =>{
+  //   const docRef = doc(database, `SCHOOLS/${userDetails.school}/STUDENTS/${profile.id}`);
+  //   const docSnap = await getDoc(docRef);
+  //   docSnap.exists() ? setProfile(docSnap.data()) : console.log('no such document')
+  // }
 
   const fetchStudentGrades = async () =>{
     setGrades(null)
-    const docRef = doc(database, `SCHOOLS/${userDetails.school}/STUDENTS/${state.email}/GRADES/${schoolYear}/${currentTerm}/RESULT`);
+    const docRef = doc(database, `SCHOOLS/${userDetails.school}/STUDENTS/${profile.id}/GRADES/${schoolYear}/${currentTerm}/RESULT`);
     const docSnap = await getDoc(docRef);
     docSnap.exists() ? setGrades(docSnap.data()) : console.log('no such document')
   }
 
   useEffect(() => {
-    if(userDetails){
-      fetchStudentInfo()
+    if(allStudentsData){
+      let name = params.id.split(' ')
+      const currentStudent = allStudentsData.filter(student=> student['last name']=== name[1] && student['first name']=== name[0] )
+      console.log(currentStudent[0])
+      setProfile(currentStudent[0])
     }
-  }, [userDetails])  
+  }, [allStudentsData])  
   
   useEffect(() => {
-    if(userDetails){
+    if(profile){
       (async()=>{
         let yearArr=[]
-        const yearsRef = collection(database, `SCHOOLS/${userDetails.school}/STUDENTS/${state.email}/GRADES`)
+        const yearsRef = collection(database, `SCHOOLS/${userDetails.school}/STUDENTS/${profile.id}/GRADES`)
         const gradeYear = await getDocs(yearsRef)
         gradeYear.forEach(year=> yearArr.push(year.id))
         setAllYears(yearArr)
       })()
     }
-  }, [userDetails])
+  }, [profile])
 
 
   useEffect(() => {
@@ -71,7 +76,8 @@ if(schoolYear && currentTerm){
     value = Number(value)
 
     if(value > schoolInfo.grading[type.includes('test') ? 'test' : 'exam'] ){
-      return alert(`${type.includes('test') ? 'test' : 'exam'} score can not be higher than ${schoolInfo.grading[type.includes('test') ? 'test' : 'exam'] }`) 
+      return alert(`${type.includes('test') ? 'test' : 'exam'} score can not be higher than 
+      ${schoolInfo.grading[type.includes('test') ? 'test' : 'exam'] }`) 
     }
 
     setGrades(prev=>({...prev, [subject]: {...prev[subject] ,[type]: value } }))
@@ -96,8 +102,8 @@ if(schoolYear && currentTerm){
     const studentRef = doc(database, `SCHOOLS/${userDetails.school}/CLASSES/${profile['student class']}/${schoolYear}/${currentTerm}`);
     const studentSnap = await getDoc(studentRef);
 
-    const resultRef = doc(database, `SCHOOLS/${userDetails.school}/STUDENTS/${state.email}/GRADES/${schoolYear}/${currentTerm}/RESULT`);
-    const otherRef = doc(database, `SCHOOLS/${userDetails.school}/STUDENTS/${state.email}/GRADES/${schoolYear}/${currentTerm}/OTHERS`);
+    const resultRef = doc(database, `SCHOOLS/${userDetails.school}/STUDENTS/${profile.id}/GRADES/${schoolYear}/${currentTerm}/RESULT`);
+    const otherRef = doc(database, `SCHOOLS/${userDetails.school}/STUDENTS/${profile.id}/GRADES/${schoolYear}/${currentTerm}/OTHERS`);
 
     try{
    studentSnap.exists() ?  // update class doc with new average

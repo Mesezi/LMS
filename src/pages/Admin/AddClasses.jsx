@@ -4,13 +4,14 @@ import { getDoc, doc, collection, setDoc, getDocs } from 'firebase/firestore';
 import { useSelector } from "react-redux";
 import bcrypt from 'bcryptjs'
 import sortClasses from "../../utils/sortClasses";
-import { useOutletContext } from "react-router-dom";
 
 const AddClasses = () => {
     const [newClassDetails, setNewClassDetails] = useState({subjects: [], alm:''})
     const userDetails = useSelector(state=>state.user.userDetails)
-    const [currentlyRegClasses] = useOutletContext()
+    const registeredClasses = useSelector(state=>state.registeredClasses)
     const subjects = useSelector(state=>state.schoolInfo.subjects)
+
+    console.log(registeredClasses)
 
 useEffect(()=>{
 
@@ -50,7 +51,7 @@ const addClass =  async (e) =>{
   
   // const docRef = doc(database, "SCHOOLS", "DEMO",  "STUDENTS", studentId);
 
-  if(currentlyRegClasses.includes(`${newClassDetails['class name']}`)){
+  if(registeredClasses.includes(`${newClassDetails['class name']}`)){
     alert('class already registered')
   }
 
@@ -71,8 +72,8 @@ const addClass =  async (e) =>{
      
     <div>
       {/* list of registered classes */}
-      {currentlyRegClasses && <ul className="mb-20">
-        {currentlyRegClasses.map(el=><li>{el}</li>)}
+      {registeredClasses && <ul className="mb-20">
+        {registeredClasses.map(el=><li>{el}</li>)}
         
         </ul>}
       {subjects &&

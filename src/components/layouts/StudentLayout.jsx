@@ -77,7 +77,7 @@ const Layout = () => {
 
     useEffect(()=>{
 // number of new messages from db
-      if(userDetails && schoolInfo){
+      if(userDetails?.latestNoticeId && schoolInfo){
           let count = 0
           Object.keys(schoolInfo.notices).forEach(key =>{
               // console.log(userDetails.latestNoticeId.includes(key), key)
@@ -89,8 +89,7 @@ const Layout = () => {
 
         // remove id's from user document that don't exist in schools notice anymore i.e notice was deleted on admin side
         const schoolNoticeId = Object.keys(schoolInfo.notices)
-        // console.log(schoolNoticeId)
-     const newIds = userDetails.latestNoticeId.filter(id=>schoolNoticeId.includes(id))
+        const newIds = userDetails.latestNoticeId.filter(id=>schoolNoticeId.includes(id))
     
      const docRef = doc(database, `SCHOOLS/${userDetails.school}/STUDENTS/${userDetails.email}`);
         updateDoc(docRef, {
@@ -139,7 +138,7 @@ const Layout = () => {
           <li className='p-3 rounded-md '><NavLink>Dashboard</NavLink> </li>
           <li className='p-3 rounded-md '><NavLink>School info</NavLink> </li>
           <li className='p-3 rounded-md '><NavLink>Timetable</NavLink> </li>
-          <li className='p-3 rounded-md '><NavLink>Notice Board</NavLink> </li>
+          <li className='p-3 rounded-md '><NavLink to='/student/profile'>Profile</NavLink> </li>
 
           <li className='p-3 rounded-md ' onClick={logOut}>Log out</li>
         </ul>

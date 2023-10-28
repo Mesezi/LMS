@@ -11,6 +11,7 @@ const Landing = () => {
         <button onClick={()=> navigate ('/admin-login')}>ADMIN</button>
         <button onClick={()=> navigate ('/student-login')}>STUDENT</button>
         <button onClick={()=> navigate ('/class-login')}>TEACHER</button>
+        <button onClick={()=> navigate ('/register-school')}>REGISTER SCHOOL</button>
     </div>
   )
 }

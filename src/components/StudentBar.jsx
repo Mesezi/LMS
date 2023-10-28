@@ -6,7 +6,7 @@ const StudentBar = (props) => {
 	return (
     <div>
 		<Link
-			to={`/admin/students/${props["first name"]}_${props["last name"]}`}
+			to={`/admin/students/${props["first name"]} ${props["last name"]}`}
 			state={{ email: props.email }}
 			className='flex  flex-col gap-3 p-5 bg-slate-300'
 		>
